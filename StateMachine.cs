@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class StateMachine
 {
-    readonly HashSet<State> states;
+    readonly List<State> states;
     public State currentState { get; private set; }
 
     public event Action<State,State> OnStateChanged;
@@ -22,6 +22,11 @@ public class StateMachine
 
         var newState = availableStates.GetRandom();
         SetState(newState);
+    }
+
+    public void SetState(int index)
+    {
+        SetState(states[index]);
     }
 
     public void SetState<T>()
@@ -48,6 +53,7 @@ public class StateMachine
 
     public void DoState(float deltaTime) => currentState?.Do(deltaTime);
     public void DoFixedUpdate() => currentState?.DoFixedUpdate();
+    public int GetCurrentStateIndex() => states.IndexOf(currentState);
     public void Dispose()
     {
         currentState.Exit();
