@@ -38,7 +38,7 @@ public class StateMachine
     {
         if (states.Contains(state) == false)
         {
-            Debug.LogWarning("Type of State:" + state.GetType().Name + " Not Found in StateMachine");
+            Debug.LogWarning("State:" + state.GetType().Name + " Not Found in StateMachine");
             return;
         }
 
@@ -147,8 +147,8 @@ public abstract class State
     }
 
     public void Complete() => onCompleted?.Invoke();
-    public void InvokeOnEnter() => onEnter?.Invoke();
-    public void InvokeOnExit() => onExit?.Invoke();
+    internal void InvokeOnEnter() => onEnter?.Invoke();
+    internal void InvokeOnExit() => onExit?.Invoke();
 
     public abstract void Enter();
     public abstract void Do(float deltaTime);
