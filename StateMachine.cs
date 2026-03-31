@@ -10,8 +10,12 @@ public class StateMachine
     public State currentState { get; private set; }
 
     public event Action<State,State> OnStateChanged;
+    public event Action<List<State>> OnStatesListChanged;
 
-    public void SetState(System.Type stateType)
+    public bool HasState(State stateType) => states.Contains(stateType);
+    public bool HasState<T>() => HasState(typeof(T));
+    public bool HasState(Type stateType) => states.Any(s => s.GetType() == stateType);
+    public void SetState(Type stateType)
     {
         var availableStates = states.Where(s => stateType.IsAssignableFrom(s.GetType()));
         if(availableStates.Any() ==false)
@@ -34,12 +38,21 @@ public class StateMachine
         SetState(typeof(T));
     }
 
-    public void SetState(State state)
+    public void SetState(State state, bool addIfNotExists = false)
     {
         if (states.Contains(state) == false)
         {
-            Debug.LogWarning("State:" + state.GetType().Name + " Not Found in StateMachine");
-            return;
+            if (addIfNotExists)
+            {
+                states.Add(state);
+                OnStatesListChanged?.Invoke(states);
+                state.stateMachine = this;
+            }
+            else
+            {
+                Debug.LogWarning("State:" + state.GetType().Name + " Not Found in StateMachine");
+                return;
+            }
         }
 
         currentState?.Exit();
